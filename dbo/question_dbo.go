@@ -3,7 +3,7 @@ package dao
 import (
 	"log"
 
-	. "github.com/dmrajkarthick/TweetStack/models"
+	. "github.com/dmrajkarthick/TweetStack/model"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -16,7 +16,7 @@ type QuestionDBO struct {
 var db *mgo.Database
 
 const (
-	COLLECTION = "Questions"
+	COLLECTION = "questions"
 )
 
 // Establish a connection to database

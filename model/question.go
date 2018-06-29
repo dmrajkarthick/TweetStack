@@ -1,4 +1,4 @@
-package models
+package model
 
 import "gopkg.in/mgo.v2/bson"
 
@@ -6,7 +6,7 @@ import "gopkg.in/mgo.v2/bson"
 // the properties in mongodb document
 type Question struct {
 	ID          bson.ObjectId `bson:"_id" json:"id"`
-	question    string        `bson:"name" json:"name"`
+	Question    string        `bson:"question" json:"question"`
 	Tags        []string      `bson:"tags" json:"tags"`
 	Description string        `bson:"description" json:"description"`
 }
