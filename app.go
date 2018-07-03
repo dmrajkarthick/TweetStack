@@ -5,21 +5,20 @@ import (
 	"log"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
-
-	. "github.com/dmrajkarthick/TweetStack/config"
-	. "github.com/dmrajkarthick/TweetStack/dbo"
-	. "github.com/dmrajkarthick/TweetStack/model"
+	"github.com/dmrajkarthick/TweetStack/config"
+	"github.com/dmrajkarthick/TweetStack/dbo"
+	"github.com/dmrajkarthick/TweetStack/model"
 
 	"github.com/gorilla/mux"
+	"gopkg.in/mgo.v2/bson"
 )
 
-var config = Config{}
-var dbo = QuestionDBO{}
+var conf config.Config
+var dboper dbo.DBOperations
 
 // GET list of questions
 func AllQuestions(w http.ResponseWriter, r *http.Request) {
-	questions, err := dbo.FindAll()
+	questions, err := dboper.FindAll()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -30,7 +29,7 @@ func AllQuestions(w http.ResponseWriter, r *http.Request) {
 // GET a question by its ID
 func FindQuestionById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	question, err := dbo.FindById(params["id"])
+	question, err := dboper.FindById(params["id"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Question ID")
 		return
@@ -41,13 +40,13 @@ func FindQuestionById(w http.ResponseWriter, r *http.Request) {
 // POST a new question
 func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var question Question
+	var question model.Question
 	if err := json.NewDecoder(r.Body).Decode(&question); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	question.ID = bson.NewObjectId()
-	if err := dbo.Insert(question); err != nil {
+	if err := dboper.Insert(question); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -57,12 +56,12 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 // PUT update an existing question
 func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var question Question
+	var question model.Question
 	if err := json.NewDecoder(r.Body).Decode(&question); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dbo.Update(question); err != nil {
+	if err := dboper.Update(question); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -72,12 +71,12 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 // DELETE an existing question
 func DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	var question Question
+	var question model.Question
 	if err := json.NewDecoder(r.Body).Decode(&question); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dbo.Delete(question); err != nil {
+	if err := dboper.Delete(question); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -97,11 +96,11 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 
 // Parse the configuration file 'config.toml', and establish a connection to DB
 func init() {
-	config.Read()
+	conf.Read()
 
-	dbo.Server = config.Server
-	dbo.Database = config.Database
-	dbo.Connect()
+	dboper.Server = conf.Server
+	dboper.Database = conf.Database
+	dboper.Connect()
 }
 
 // Define HTTP request routes

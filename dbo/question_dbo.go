@@ -1,14 +1,14 @@
-package dao
+package dbo
 
 import (
 	"log"
 
-	. "github.com/dmrajkarthick/TweetStack/model"
+	"github.com/dmrajkarthick/TweetStack/model"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type QuestionDBO struct {
+type DBOperations struct {
 	Server   string
 	Database string
 }
@@ -20,7 +20,7 @@ const (
 )
 
 // Establish a connection to database
-func (m *QuestionDBO) Connect() {
+func (m *DBOperations) Connect() {
 	session, err := mgo.Dial(m.Server)
 	if err != nil {
 		log.Fatal(err)
@@ -29,33 +29,33 @@ func (m *QuestionDBO) Connect() {
 }
 
 // Find list of Questions
-func (m *QuestionDBO) FindAll() ([]Question, error) {
-	var Questions []Question
+func (m *DBOperations) FindAll() ([]model.Question, error) {
+	var Questions []model.Question
 	err := db.C(COLLECTION).Find(bson.M{}).All(&Questions)
 	return Questions, err
 }
 
 // Find a Question by its id
-func (m *QuestionDBO) FindById(id string) (Question, error) {
-	var Question Question
+func (m *DBOperations) FindById(id string) (model.Question, error) {
+	var Question model.Question
 	err := db.C(COLLECTION).FindId(bson.ObjectIdHex(id)).One(&Question)
 	return Question, err
 }
 
 // Insert a Question into database
-func (m *QuestionDBO) Insert(Question Question) error {
+func (m *DBOperations) Insert(Question model.Question) error {
 	err := db.C(COLLECTION).Insert(&Question)
 	return err
 }
 
 // Delete an existing Question
-func (m *QuestionDBO) Delete(Question Question) error {
+func (m *DBOperations) Delete(Question model.Question) error {
 	err := db.C(COLLECTION).Remove(&Question)
 	return err
 }
 
 // Update an existing Question
-func (m *QuestionDBO) Update(Question Question) error {
+func (m *DBOperations) Update(Question model.Question) error {
 	err := db.C(COLLECTION).UpdateId(Question.ID, &Question)
 	return err
 }
