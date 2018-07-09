@@ -2,8 +2,8 @@ package dbo
 
 import (
 	"log"
-	mgo "github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type DBOperations struct {
@@ -31,7 +31,7 @@ func (m *DBOperations) FindAll(collection string) ([]bson.M, error) {
 // Find a collection by its id
 func (m *DBOperations) FindOne(collection string, id string) (bson.M, error) {
 	var obj bson.M
-	err := db.C(collection).Find(bson.M{"id": bson.ObjectIdHex(id)}).One(&obj)
+	err := db.C(collection).FindId(bson.ObjectIdHex(id)).One(&obj)
 	return obj, err
 }
 
@@ -49,6 +49,6 @@ func (m *DBOperations) Delete(collection string, obj interface{}) error {
 
 // Update an existing collection
 func (m *DBOperations) Update(collection string, id bson.ObjectId, obj interface{}) error {
-	err := db.C(collection).Update(bson.M{"id": id} , &obj)
+	err := db.C(collection).UpdateId(id , &obj)
 	return err
 }

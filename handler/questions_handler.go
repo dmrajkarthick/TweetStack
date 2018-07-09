@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/dmrajkarthick/TweetStack/model"
-	"github.com/mitchellh/mapstructure"
 	"github.com/dmrajkarthick/TweetStack/utils"
 	"github.com/gorilla/mux"
-	"encoding/json"
-	"github.com/globalsign/mgo/bson"
+	"gopkg.in/mgo.v2/bson"
 	"github.com/dmrajkarthick/TweetStack/dbo"
+	"encoding/json"
 )
 
 var dboper_questions dbo.DBOperations
@@ -29,11 +28,11 @@ func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(jsonData, &questions)
 	//fmt.Println(questions[0].Id)
 
-	err = mapstructure.Decode(res, &questions)
+	/*err = mapstructure.Decode(res, &questions)
 	if err != nil{
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
-	}
+	}*/
 	utils.RespondWithJson(w, http.StatusOK, questions)
 }
 
@@ -46,7 +45,9 @@ func FindQuestionById(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid Question ID")
 		return
 	}
-	err = mapstructure.Decode(res, &question)
+	jsonData, err := json.Marshal(res)
+
+	json.Unmarshal(jsonData, &question)
 	utils.RespondWithJson(w, http.StatusOK, question)
 }
 
@@ -58,7 +59,7 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	question.Id = bson.NewObjectId()
+	question.ID = bson.NewObjectId()
 
 	if err := dboper_questions.Insert(utils.COLLECTION_QUESTIONS, question); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
@@ -75,11 +76,11 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-	if err := dboper_questions.Update(utils.COLLECTION_QUESTIONS, question.Id, question); err != nil {
+	if err := dboper_questions.Update(utils.COLLECTION_QUESTIONS, question.ID, question); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.RespondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
+	utils.RespondWithJson(w, http.StatusOK, map[string]string{"result": "successfully updated"})
 }
 
 // DELETE an existing question
@@ -94,6 +95,6 @@ func DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	utils.RespondWithJson(w, http.StatusOK, map[string]string{"result": "success"})
+	utils.RespondWithJson(w, http.StatusOK, map[string]string{"result": "successfully deleted"})
 }
 
