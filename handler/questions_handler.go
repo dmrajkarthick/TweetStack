@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 )
 
+
 var dboper_questions dbo.DBOperations
 
 // GET list of questions
@@ -21,18 +22,10 @@ func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-
 	fmt.Println(res)
 	jsonData, err := json.Marshal(res)
-
 	json.Unmarshal(jsonData, &questions)
-	//fmt.Println(questions[0].Id)
-
-	/*err = mapstructure.Decode(res, &questions)
-	if err != nil{
-		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}*/
+	
 	utils.RespondWithJson(w, http.StatusOK, questions)
 }
 

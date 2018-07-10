@@ -20,8 +20,8 @@ func GetAllAnswers(w http.ResponseWriter, r *http.Request){
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	
 	jsonData, err := json.Marshal(res)
-
 	json.Unmarshal(jsonData, &answers)
 	utils.RespondWithJson(w, http.StatusOK, answers)
 }

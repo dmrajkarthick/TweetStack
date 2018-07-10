@@ -32,6 +32,7 @@ func (m *DBOperations) FindAll(collection string) ([]bson.M, error) {
 func (m *DBOperations) FindOne(collection string, id string) (bson.M, error) {
 	var obj bson.M
 	err := db.C(collection).FindId(bson.ObjectIdHex(id)).One(&obj)
+	//err := db.C(collection).Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&obj)
 	return obj, err
 }
 
