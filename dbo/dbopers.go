@@ -4,6 +4,8 @@ import (
 	"log"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"os"
+	"time"
 )
 
 type DBOperations struct {
@@ -13,9 +15,18 @@ type DBOperations struct {
 
 var db *mgo.Database
 
+var host = os.Getenv("MONGOHOST")
+
+
 // Establish a connection to database
 func (m *DBOperations) Connect() {
-	session, err := mgo.Dial(m.Server)
+
+	info := &mgo.DialInfo{
+		Addrs:    []string{host},
+		Timeout:  60 * time.Second,
+	}
+
+	session, err := mgo.DialWithInfo(info)
 	if err != nil {
 		log.Fatal(err)
 	}
