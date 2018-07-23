@@ -72,16 +72,6 @@ func (m *DBOperations) Update(collection string, id bson.ObjectId, obj interface
 	return err
 }
 
-func (m *DBOperations) GetRel(collection string, id bson.ObjectId, obj interface{}) *mgo.Query {
-		ref := mgo.DBRef{
-			Collection:collection,
-			Id:id,
-			Database:"",
-		}
-	query := db.FindRef(&ref)
-	return query
-}
-
 
 
 

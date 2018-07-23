@@ -15,9 +15,8 @@ type Answer struct {
 	Description string    `bson:"description" json:"description"`
 
 	//Question Id to which an answer is related. 
-	QuestionId   mgo.DBRef   `bson:"questionId" json:"questionId"`
+	QuestionId   DBRef   `bson:"questionId" json:"questionId"`
 }
-
 
 type AnswerIf interface {
 	GetID() bson.ObjectId
@@ -81,11 +80,11 @@ func (answer *Answer) SetDescription(description string){
 	answer.Description = description
 }
 
-func (answer *Answer) GetRelQuestionId() mgo.DBRef{
+func (answer *Answer) GetRelQuestionId() DBRef{
 	return answer.QuestionId
 }
 
-func (answer *Answer) SetRelQuestionId(mgo.DBRef){
+func (answer *Answer) SetRelQuestionId(DBRef){
 
 }
 

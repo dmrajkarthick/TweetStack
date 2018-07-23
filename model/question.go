@@ -18,7 +18,7 @@ type Question struct {
 	Description string        `json:"description" bson:"description"`
 
 	//List of Answer IDs that are associated to a question.
-	AnswerIds   []mgo.DBRef   `json:"answerIds" bson:"answerIds"`
+	AnswerIds   []DBRef   `json:"answerIds" bson:"answerIds"`
 }
 
 var dboper_questions dbo.DBOperations
@@ -87,33 +87,34 @@ func (question *Question) SetDescription(description string){
 }
 
 
-func (question *Question) GetRelAnswerIds() []mgo.DBRef{
+func (question *Question) GetRelAnswerIds() []DBRef{
 	return question.AnswerIds
 }
 
-func (question *Question) SetRelAnswerIds([]mgo.DBRef){
+func (question *Question) SetRelAnswerIds([]DBRef){
 
 }
 
 func (question *Question) GetRelAnswers() ([]Answer, error){
 	// Get answers DBRefs and retrive data from DB.
 	var answers []Answer
-	for k, v := range question.AnswerIds{
+	var answer Answer
+	for _, v := range question.AnswerIds {
 		res, err := dboper_questions.FindOne(v.Collection, v.Id.(string))
 		if err != nil {
 			return nil, err
 		}
 		jsonData, err := json.Marshal(res)
 
-		json.Unmarshal(jsonData, answers[k])
-		answers = append(answers, answers[k])
+		json.Unmarshal(jsonData, &answer)
+		answers = append(answers, answer)
 	}
 	return answers, nil
 }
 
 func (question *Question) SetRelAnswers(answer []Answer) error{
 	for _, v := range answer{
-		ans := mgo.DBRef{
+		ans := DBRef{
 			Collection: utils.COLLECTION_ANSWERS,
 			Id: v.ID,
 			Database:"",
@@ -130,7 +131,7 @@ func (question *Question) SetRelAnswers(answer []Answer) error{
 }
 
 func (question *Question) SetRelAnswer(answer Answer){
-	ans := mgo.DBRef{
+	ans := DBRef{
 		Collection: utils.COLLECTION_ANSWERS,
 		Id: answer.ID,
 		Database:"",

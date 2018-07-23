@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2"
 )
 
 var dboper_answers dbo.DBOperations
@@ -64,7 +63,7 @@ func AddAnswer(w http.ResponseWriter, r *http.Request){
 
 	//Adding question details to answer
 	answer.ID = bson.NewObjectId()
-	qn := mgo.DBRef{
+	qn := model.DBRef{
 		Collection: utils.COLLECTION_QUESTIONS,
 		Id: questionId,
 		Database:"",
