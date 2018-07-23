@@ -47,6 +47,13 @@ func (m *DBOperations) FindOne(collection string, id string) (bson.M, error) {
 	return obj, err
 }
 
+// Find data based on query
+func (m *DBOperations) FindByQuery(collection string, query mgo.Query) (bson.M, error){
+	var obj bson.M
+	err := db.C(collection).Find(query).All((&obj))
+	return obj, err
+}
+
 // Insert a collection into database
 func (m *DBOperations) Insert(collection string, obj interface{}) error {
 	err := db.C(collection).Insert(&obj)
@@ -64,3 +71,17 @@ func (m *DBOperations) Update(collection string, id bson.ObjectId, obj interface
 	err := db.C(collection).UpdateId(id , &obj)
 	return err
 }
+
+func (m *DBOperations) GetRel(collection string, id bson.ObjectId, obj interface{}) *mgo.Query {
+		ref := mgo.DBRef{
+			Collection:collection,
+			Id:id,
+			Database:"",
+		}
+	query := db.FindRef(&ref)
+	return query
+}
+
+
+
+
