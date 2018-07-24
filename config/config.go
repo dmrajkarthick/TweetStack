@@ -12,7 +12,7 @@ type Config struct {
 }
 
 func (c *Config) Read() {
-	if _, err := toml.DecodeFile("Tweetstack/db.conf", &c); err != nil {
+	if _, err := toml.DecodeFile("./db.conf", &c); err != nil {
 		log.Fatal(err)
 	}
 

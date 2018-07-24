@@ -30,7 +30,7 @@ func main() {
 	r.HandleFunc("/questions", handler.UpdateQuestion).Methods("PUT")
 	r.HandleFunc("/questions", handler.DeleteQuestion).Methods("DELETE")
 	r.HandleFunc("/questions/{id}", handler.FindQuestionById).Methods("GET")
-	r.HandleFunc("/answers/{questionId}", handler.GetAllAnswers).Methods("GET")
+	r.HandleFunc("/answers/question/{questionId}", handler.GetAllAnswers).Methods("GET")
 	r.HandleFunc("/answers/{questionId}", handler.AddAnswer).Methods("POST")
 	r.HandleFunc("/answers", handler.UpdateAnswer).Methods("PUT")
 	r.HandleFunc("/answers", handler.DeleteAnswer).Methods("DELETE")

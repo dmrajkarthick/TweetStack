@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"encoding/json"
 	"gopkg.in/mgo.v2/bson"
+	"fmt"
 )
 
 var dboper_answers dbo.DBOperations
@@ -55,12 +56,28 @@ func AddAnswer(w http.ResponseWriter, r *http.Request){
 		utils.RespondWithError(w, http.StatusInternalServerError, "Please provide details of the question for this answer")
 	}
 
+	fmt.Println("Question ID: ", questionId)
 	var answer model.Answer
 	if err := json.NewDecoder(r.Body).Decode(&answer); err!=nil {
 		utils.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
+	fmt.Println("Answer Decoded from Body : ", answer)
+
+	//Adding answer details to question.
+	var question model.Question
+	res, err := dboper_questions.FindOne(utils.COLLECTION_QUESTIONS, questionId)
+	if err != nil {
+		utils.RespondWithError(w, http.StatusBadRequest, "Invalid Question ID")
+		return
+	}
+	jsonData, err := json.Marshal(res)
+	json.Unmarshal(jsonData, &question)
+
+	fmt.Println("Question retrieved from DB : ", question)
+
+	fmt.Println("Adding question details to answer ")
 	//Adding question details to answer
 	answer.ID = bson.NewObjectId()
 	qn := model.DBRef{
@@ -75,18 +92,8 @@ func AddAnswer(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	//Adding answer details to question.
-	var question model.Question
-	res, err := dboper_questions.FindOne(utils.COLLECTION_QUESTIONS, questionId)
-	if err != nil {
-		utils.RespondWithError(w, http.StatusBadRequest, "Invalid Question ID")
-		return
-	}
-	jsonData, err := json.Marshal(res)
-
-	json.Unmarshal(jsonData, &question)
 	question.SetRelAnswer(answer)
-
+	fmt.Println("Updating the question with answer DB Ref")
 	if err := dboper_questions.Update(utils.COLLECTION_QUESTIONS, question.ID, question); err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
